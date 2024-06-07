@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt_BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dados Planilha</title>
+    <link rel="stylesheet" href="main.css">
+    <link rel="icon" href="logopag.png" >
+</head>
+<body>
+    <header>
+        <div class="cabeca">
+            <img src="logo.png">
+            <h1 class="title1">Gestão Geral de Clientes Nuvem</h1>
+        </div>
+    </header>
+    <div class="corpo">
+        <h1 class="title2">Buscar Cliente</h1>
+        <input type="text" id="input">
+        <button onclick=pesquisarInput() class="botao">Pesquisar</button>
+        <div id="data-container"></div>
+    </div>
+    
+    
+    <footer class="footer">
+        <div class="rodape">
+            <div class="icones">
+                <a href="https://www.instagram.com/fortes.tecnologia/"><img src="instagram.png" class="ico"></a>
+                <a href="https://br.linkedin.com/company/fortes-tecnologia"><img src="social.png" class="ico"></a>
+                <a href="https://www.facebook.com/fortestecnologia/?locale=pt_BR"><img src="facebook.png" class="ico"></a>
+                
+            </div>
+        </div>
+        <p>© 2024 - Fortes Tecnologia em Sistemas</p>
+    </footer>
+
+  <script>
+
+    function pesquisarInput() {
+        const container = document.getElementById('data-container');
+        var test = document.getElementById("input").value;
+    
+    const url = "https://script.google.com/macros/s/AKfycbyR89WIA_mLkqRq4vz087Om1T_uxixyVxH5fvtqMX-MQhwO-kwdo0duViGcZJZzxH_wGQ/exec";
+    function showLoadingMessage(container) {
+
+      container.innerHTML = ''; // Limpa o contêiner antes de adicionar a mensagem de carregamento
+      const loadingMessage = document.createElement('h3');
+      loadingMessage.className = 'pesquisa-cli'
+      loadingMessage.innerHTML = `Pesquisando Cliente... <img src="pesquisa.gif" class="gif-pes" >` ;
+      
+      container.appendChild(loadingMessage);
+    }
+    
+    showLoadingMessage(container);
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        
+        
+        const matchingItems = data.Cli.filter(item => {
+            return Object.values(item).some(value => 
+              value.toString().toLowerCase().includes(test.toLowerCase())
+            );
+        });
+
+        container.innerHTML = ''; // Limpa o contêiner antes de adicionar novos dados
+        
+        // Filtra os itens que correspondem ao CPF
+        if (matchingItems.length > 0) {
+          matchingItems.forEach(item => {
+
+            const titleContainer = document.createElement('div')
+            titleContainer.className = 'Cliente-Container' 
+
+            const itemContainer = document.createElement('div');
+            itemContainer.className = 'data-item';
+
+
+
+            const nomeContainer = document.createElement('div');
+            nomeContainer.className = 'cliente-container';
+            nomeContainer.textContent = `Cliente: ${item.CLIENTE}`;
+            titleContainer.appendChild(nomeContainer);
+
+
+            for (const key in item) {
+              if (item.hasOwnProperty(key)) {
+                if (key === 'CLIENTE') {
+                            continue;
+                        }
+                const paragraph = document.createElement('p');
+                paragraph.textContent = `${key}: ${item[key]}`;
+                itemContainer.appendChild(paragraph);
+              }
+            }
+            container.appendChild(titleContainer);
+            container.appendChild(itemContainer);
+            
+          });
+        } else {
+          const nEncontrou = document.createElement('h3');
+          nEncontrou.className = 'n-Encontrou';
+          nEncontrou.innerHTML = `Não encontrado. <img src="404.gif" class="gif-err" >`;
+          container.appendChild(nEncontrou)
+        }
+      })
+      .catch(error => {
+        const erro = document.createElement('h3');
+        erro.className = 'erro-cli'
+        erro.textContent = 'Erro ao buscar os dados.';
+        container.appendChild(erro)
+      });
+    }
+  </script>
+</body>
+</html>
